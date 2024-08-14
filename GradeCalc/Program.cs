@@ -10,13 +10,50 @@ namespace GradeCalc
 {
     class Program
     {
+        List<Course> semester = new List<Course>();
+
         static void Main(string[] args)
         {
+            Console.WriteLine("Welcome to the Grade Calculator!");
+            bool isrunning = true;
+            do
+            {
+                Console.WriteLine("What would you like to do?");
+                Console.WriteLine("1. Check the course list");
+                Console.WriteLine("2. Check a course grade");
+                Console.WriteLine("3. Quit");
 
+                int inpt;
+                int runinpt;
 
+                if (int.TryParse(Console.ReadLine(), out inpt))
+                {
+                    runinpt = inpt;
+                }
+                else
+                {
+                    Console.WriteLine("What?");
+                }
 
+                
 
+                switch (inpt)
+                {
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            while (isrunning == true);
         }
+
+
     }
 
     class Course
@@ -25,7 +62,7 @@ namespace GradeCalc
         private int id = nextid++;
         private List<Catatgory> catagories = new List<Catatgory>();
 
-        Course()
+        public Course()
         {
 
         }
@@ -42,7 +79,10 @@ namespace GradeCalc
         {
             foreach (Catatgory cat in catagories)
             {
-                if(cat.)
+                if (cat.)
+                {
+
+                }
             }
         }
     }
@@ -75,7 +115,7 @@ namespace GradeCalc
 
         public int getWeight()
         {
-            s
+            return weight;
         }
 
     }
