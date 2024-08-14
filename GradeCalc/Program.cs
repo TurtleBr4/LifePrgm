@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Text.Json;
 
 namespace GradeCalc
 {
@@ -53,6 +54,11 @@ namespace GradeCalc
             while (isrunning == true);
         }
 
+        public void SaveListToJsonFile(List<Course> list, string filePath)
+        {
+            string json = JsonSerializer.Serialize(list);
+            File.WriteAllText(filePath, json);
+        }
 
     }
 
@@ -60,6 +66,7 @@ namespace GradeCalc
     {
         private static int nextid = 0;
         private int id = nextid++;
+        int totalpoints;
         private List<Catatgory> catagories = new List<Catatgory>();
 
         public Course()
@@ -67,22 +74,28 @@ namespace GradeCalc
 
         }
 
-        public void addCat(string n, int w, int mp, int cp, int aa)
+        public void addCat(string n, int w, int mp, int cp, int aa, int ptotal)
         {
+            totalpoints = ptotal;
             Catatgory cat = new Catatgory(w, mp, cp, aa, n);
 
             catagories.Add(cat);
+            errorCheck();
             
         }
 
         public void errorCheck()
         {
+            int temptotalpts = 0;
             foreach (Catatgory cat in catagories)
             {
-                if (cat.)
-                {
+                temptotalpts += cat.getMaxPoints();
+            }
 
-                }
+            if (temptotalpts > totalpoints)
+            {
+                Console.WriteLine("Point Overflow! Increasing Max Points");
+                totalpoints = temptotalpts;
             }
         }
     }
@@ -116,6 +129,11 @@ namespace GradeCalc
         public int getWeight()
         {
             return weight;
+        }
+
+        public int getMaxPoints()
+        {
+            return maxPoints;
         }
 
     }
