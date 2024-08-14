@@ -11,10 +11,24 @@ namespace GradeCalc
 {
     class Program
     {
-        List<Course> semester = new List<Course>();
+        
+        string filePath = "C:\\Users\\zaidg\\source\\repos\\GradeCalc\\GradeCalc\\DataLocation\\";
+
+        List<Course> semester = new List<Course>(); //create the empty list of courses, if no saved file exists then we write to it for the first time, otherwise we fill the list with the json data
+
+
+        public void onProgramStart()
+        {
+           semester = LoadListFromJsonFile();
+        }
+
 
         static void Main(string[] args)
         {
+            Program me = new Program();
+
+            me.onProgramStart();
+
             Console.WriteLine("Welcome to the Grade Calculator!");
             bool isrunning = true;
             do
@@ -22,7 +36,9 @@ namespace GradeCalc
                 Console.WriteLine("What would you like to do?");
                 Console.WriteLine("1. Check the course list");
                 Console.WriteLine("2. Check a course grade");
-                Console.WriteLine("3. Quit");
+                Console.WriteLine("3. Check/Change file path");
+                Console.WriteLine("4.");
+                Console.WriteLine("0. Quit");
 
                 int inpt;
                 int runinpt;
@@ -40,7 +56,14 @@ namespace GradeCalc
 
                 switch (inpt)
                 {
+                    case 0:
+                        isrunning = false;
+                        break;
                     case 1:
+                        foreach (Course cr in me.semester)
+                        {
+                            cr.ToString;
+                        }
                         break;
                     case 2:
                         break;
@@ -54,10 +77,38 @@ namespace GradeCalc
             while (isrunning == true);
         }
 
-        public void SaveListToJsonFile(List<Course> list, string filePath)
+        public void SaveListToJsonFile(List<Course> list, string filePath) //pass in the list and the location of the save data
         {
-            string json = JsonSerializer.Serialize(list);
-            File.WriteAllText(filePath, json);
+            string json = JsonSerializer.Serialize(list); //converts list data into json text
+            File.WriteAllText(filePath, json); //take the json text and write it onto a file at the given location
+        }
+        
+        public List<Course> LoadListFromJsonFile()
+        {
+            try //catching errors in case no file exists
+            {
+                if (File.Exists(filePath))
+                {
+                    
+                    string json = File.ReadAllText(filePath); //pull json string data from the file location
+                    return JsonSerializer.Deserialize<List<Course>>(json); //convert json data back into a list of courses, return said list
+                }
+                else
+                {
+                    
+                    return semester;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("No course list found!");
+                return semester;
+            }
+        }
+
+        public void changeFilePath(string newpath)
+        {
+            filePath = newpath;
         }
 
     }
@@ -66,17 +117,19 @@ namespace GradeCalc
     {
         private static int nextid = 0;
         private int id = nextid++;
-        int totalpoints;
+        private int totalpoints;
+        private string name;
         private List<Catatgory> catagories = new List<Catatgory>();
 
-        public Course()
+        public Course(string na, int pt)
         {
-
+            name = na;
+            totalpoints = pt;
         }
 
-        public void addCat(string n, int w, int mp, int cp, int aa, int ptotal)
+        public void addCat(string n, int w, int mp, int cp, int aa)
         {
-            totalpoints = ptotal;
+            
             Catatgory cat = new Catatgory(w, mp, cp, aa, n);
 
             catagories.Add(cat);
@@ -97,6 +150,20 @@ namespace GradeCalc
                 Console.WriteLine("Point Overflow! Increasing Max Points");
                 totalpoints = temptotalpts;
             }
+        }
+
+        public int getTotalPoints()
+        {
+            return totalpoints;
+        }
+        public string getName()
+        {
+            return name;
+        }
+
+        public override string ToString()
+        {
+            return $"{getName()}, Total Points: {getTotalPoints()}";
         }
     }
 
