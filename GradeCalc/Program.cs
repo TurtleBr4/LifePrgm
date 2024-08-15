@@ -37,7 +37,7 @@ namespace GradeCalc
                 Console.WriteLine("1. Check the course list");
                 Console.WriteLine("2. Check a course grade");
                 Console.WriteLine("3. Check/Change file path");
-                Console.WriteLine("4.");
+                Console.WriteLine("4. Add a course to the list");
                 Console.WriteLine("0. Quit");
 
                 int inpt;
@@ -49,7 +49,7 @@ namespace GradeCalc
                 }
                 else
                 {
-                    Console.WriteLine("What?");
+                    Console.WriteLine("If you see this text something has gone *terribly* wrong");
                 }
 
                 
@@ -62,14 +62,41 @@ namespace GradeCalc
                     case 1:
                         foreach (Course cr in me.semester)
                         {
-                            cr.ToString;
+                            cr.ToString();
                         }
                         break;
                     case 2:
                         break;
                     case 3:
+                        Console.WriteLine("1. Check the path");
+                        Console.WriteLine("2. Change the path");
+                        int oh = int.Parse(Console.ReadLine());
+
+                        switch (oh)
+                        {
+                            case 1:
+                                Console.WriteLine(me.returnFilePath());
+                                break;
+                            case 2:
+                                me.changeFilePath(Console.ReadLine());
+                                break;
+                        }
+
+                        break;
+                    case 4:
+                        Console.WriteLine("Course Name?");
+                        string cname = Console.ReadLine();
+                        Console.WriteLine("Maximum Possible Points?");
+                        int cpoints = int.Parse(Console.ReadLine());
+
+                        Course add = new Course(cname, cpoints);
+                        me.semester.Add(add);
+
+                        //dont forget to add catagories and individual grades for them
+
                         break;
                     default:
+                        Console.WriteLine("Wrong, try again idiot!");
                         break;
                 }
 
@@ -111,6 +138,11 @@ namespace GradeCalc
             filePath = newpath;
         }
 
+        public string returnFilePath()
+        {
+            return filePath;
+        }
+
     }
 
     class Course
@@ -127,7 +159,7 @@ namespace GradeCalc
             totalpoints = pt;
         }
 
-        public void addCat(string n, int w, int mp, int cp, int aa)
+        public void addCat(string n, int w, int mp, int cp, int aa) //name, weight, max points, current points, amount of assignments 
         {
             
             Catatgory cat = new Catatgory(w, mp, cp, aa, n);
@@ -164,6 +196,21 @@ namespace GradeCalc
         public override string ToString()
         {
             return $"{getName()}, Total Points: {getTotalPoints()}";
+        }
+
+        public float calcGrade()
+        {
+            float Grade;
+            float temp = 0f;
+
+            foreach (Catatgory c in catagories)
+            {
+                temp += c.getMaxPoints();
+            }
+
+            Grade = totalpoints / temp;
+
+            return Grade;
         }
     }
 
