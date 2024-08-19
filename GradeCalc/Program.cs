@@ -12,13 +12,20 @@ namespace GradeCalc
     class Program
     {
         
-        string filePath = "C:\\Users\\zaidg\\source\\repos\\GradeCalc\\GradeCalc\\DataLocation\\";
+        string filePath = "C:\\Users\\zaidg\\source\\repos\\GradeCalc\\GradeCalc\\DataLocation\\text.json";
+        
 
         List<Course> semester = new List<Course>(); //create the empty list of courses, if no saved file exists then we write to it for the first time, otherwise we fill the list with the json data
 
 
         public void onProgramStart()
         {
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("No saved data found, creating new save");
+                FileStream yes = File.Create(filePath);
+            }
+
            semester = LoadListFromJsonFile();
         }
 
@@ -58,11 +65,12 @@ namespace GradeCalc
                 {
                     case 0:
                         isrunning = false;
+                        me.SaveListToJsonFile(me.semester, me.filePath);
                         break;
                     case 1:
                         foreach (Course cr in me.semester)
                         {
-                            cr.ToString();
+                           Console.WriteLine(cr.ToString());
                         }
                         break;
                     case 2:
@@ -95,6 +103,12 @@ namespace GradeCalc
                         //dont forget to add catagories and individual grades for them
 
                         break;
+                    case 112504:
+                        File.Delete(me.filePath);
+                        FileStream ye =  File.Create(me.filePath);
+                        //Data reverted!
+                        break;
+
                     default:
                         Console.WriteLine("Wrong, try again idiot!");
                         break;
@@ -112,25 +126,8 @@ namespace GradeCalc
         
         public List<Course> LoadListFromJsonFile()
         {
-            try //catching errors in case no file exists
-            {
-                if (File.Exists(filePath))
-                {
-                    
-                    string json = File.ReadAllText(filePath); //pull json string data from the file location
-                    return JsonSerializer.Deserialize<List<Course>>(json); //convert json data back into a list of courses, return said list
-                }
-                else
-                {
-                    
-                    return semester;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("No course list found!");
-                return semester;
-            }
+            string json = File.ReadAllText(filePath); //pull json string data from the file location
+            return JsonSerializer.Deserialize<List<Course>>(json); //convert json data back into a list of courses, return said list
         }
 
         public void changeFilePath(string newpath)
@@ -149,14 +146,14 @@ namespace GradeCalc
     {
         private static int nextid = 0;
         private int id = nextid++;
-        private int totalpoints;
-        private string name;
+        public int TotalPoints { get; set; } //these are properities, apparently the serializer needs access to variables but i also want encapuslation so we use these things ig
+        public string Name { get; set; }
         private List<Catatgory> catagories = new List<Catatgory>();
 
-        public Course(string na, int pt)
+        public Course(string name, int totalpoints)
         {
-            name = na;
-            totalpoints = pt;
+            Name = name;
+            TotalPoints = totalpoints;
         }
 
         public void addCat(string n, int w, int mp, int cp, int aa) //name, weight, max points, current points, amount of assignments 
@@ -177,20 +174,20 @@ namespace GradeCalc
                 temptotalpts += cat.getMaxPoints();
             }
 
-            if (temptotalpts > totalpoints)
+            if (temptotalpts > TotalPoints)
             {
                 Console.WriteLine("Point Overflow! Increasing Max Points");
-                totalpoints = temptotalpts;
+                TotalPoints = temptotalpts;
             }
         }
 
         public int getTotalPoints()
         {
-            return totalpoints;
+            return TotalPoints;
         }
         public string getName()
         {
-            return name;
+            return Name;
         }
 
         public override string ToString()
@@ -208,7 +205,7 @@ namespace GradeCalc
                 temp += c.getMaxPoints();
             }
 
-            Grade = totalpoints / temp;
+            Grade = TotalPoints / temp;
 
             return Grade;
         }
