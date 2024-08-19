@@ -20,11 +20,7 @@ namespace GradeCalc
 
         public void onProgramStart()
         {
-            if (!File.Exists(filePath))
-            {
-                Console.WriteLine("No saved data found, creating new save");
-                FileStream yes = File.Create(filePath);
-            }
+            
 
            semester = LoadListFromJsonFile();
         }
@@ -63,19 +59,26 @@ namespace GradeCalc
 
                 switch (inpt)
                 {
-                    case 0:
+                    case 0: //Quit out
                         isrunning = false;
                         me.SaveListToJsonFile(me.semester, me.filePath);
                         break;
-                    case 1:
+                    case 1: //Print the course list
                         foreach (Course cr in me.semester)
                         {
                            Console.WriteLine(cr.ToString());
                         }
                         break;
                     case 2:
+                        Console.WriteLine("Course id?");
+                        int tempid = int.Parse(Console.ReadLine());
+
+                        if (me.semester.FindIndex())
+                        {
+
+                        }
                         break;
-                    case 3:
+                    case 3: //file path return and modification
                         Console.WriteLine("1. Check the path");
                         Console.WriteLine("2. Change the path");
                         int oh = int.Parse(Console.ReadLine());
@@ -91,22 +94,44 @@ namespace GradeCalc
                         }
 
                         break;
-                    case 4:
+                    case 4: //add a course 
                         Console.WriteLine("Course Name?");
                         string cname = Console.ReadLine();
                         Console.WriteLine("Maximum Possible Points?");
                         int cpoints = int.Parse(Console.ReadLine());
 
                         Course add = new Course(cname, cpoints);
+                        Console.WriteLine("How Many Catagories?");
+                        int catcount = int.Parse(Console.ReadLine());
+
+
+                        for (int x = 0; x < catcount; x++)
+                        {
+                            Console.WriteLine("Name?");
+                            string cn = Console.ReadLine();
+                            Console.WriteLine("Weight?");
+                            int cw = int.Parse(Console.ReadLine());
+                            Console.WriteLine("Max Points?");
+                            int cmp = int.Parse(Console.ReadLine());
+                            Console.WriteLine("Current Points?");
+                            int ccp = int.Parse(Console.ReadLine());
+                            Console.WriteLine("Assignment Count?");
+                            int caa = int.Parse(Console.ReadLine());
+                            add.addCat(cn, cw, cmp, ccp, caa); //add course catagories: name, weight, max points, current points, amount of assignments 
+
+                        }
+
+
                         me.semester.Add(add);
 
                         //dont forget to add catagories and individual grades for them
 
                         break;
-                    case 112504:
+                    case 112504: //file reset (for testing!)
                         File.Delete(me.filePath);
-                        FileStream ye =  File.Create(me.filePath);
-                        //Data reverted!
+                        me.onProgramStart();
+                        Console.WriteLine("Data Reverted!");
+                        
                         break;
 
                     default:
@@ -126,8 +151,20 @@ namespace GradeCalc
         
         public List<Course> LoadListFromJsonFile()
         {
-            string json = File.ReadAllText(filePath); //pull json string data from the file location
-            return JsonSerializer.Deserialize<List<Course>>(json); //convert json data back into a list of courses, return said list
+            if (File.Exists(filePath))
+            {
+                Console.WriteLine("No saved data found, creating new save");
+                FileStream yes = File.Create(filePath);
+                return semester;
+
+            }
+            else
+            {
+                string json = File.ReadAllText(filePath); //pull json string data from the file location
+                return JsonSerializer.Deserialize<List<Course>>(json); //convert json data back into a list of courses, return said list
+            }
+
+           
         }
 
         public void changeFilePath(string newpath)
@@ -190,9 +227,14 @@ namespace GradeCalc
             return Name;
         }
 
+        public int getID()
+        {
+            return id;
+        }
+
         public override string ToString()
         {
-            return $"{getName()}, Total Points: {getTotalPoints()}";
+            return $"{getID()}. {getName()}, Total Points: {getTotalPoints()}";
         }
 
         public float calcGrade()
@@ -202,7 +244,7 @@ namespace GradeCalc
 
             foreach (Catatgory c in catagories)
             {
-                temp += c.getMaxPoints();
+                temp += c.getCurrentPoints();
             }
 
             Grade = TotalPoints / temp;
@@ -247,5 +289,9 @@ namespace GradeCalc
             return maxPoints;
         }
 
+        public int getCurrentPoints()
+        {
+            return currentPoints;
+        }
     }
 }
